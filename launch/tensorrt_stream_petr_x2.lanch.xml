@@ -77,6 +77,7 @@
     <remap from="~/input/camera3/image" to="/sensing/camera/camera10/image_raw"/>
     <remap from="~/input/camera4/image" to="/sensing/camera/camera7/image_raw"/>
     <remap from="~/input/camera5/image" to="/sensing/camera/camera9/image_raw"/>
+    <remap from="~/output/objects" to="/perception/object_recognition/camera_only/objects"/>
     
     <!-- <remap from="~/input/camera0/image/compressed" to="/sensing/camera/camera8/image_raw/compressed"/>
     <remap from="~/input/camera1/image/compressed" to="/sensing/camera/camera0/image_raw/compressed"/>
