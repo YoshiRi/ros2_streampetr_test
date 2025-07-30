@@ -2,9 +2,7 @@
   <arg name="build_only" default="false" description="shutdown node after TensorRT engine file is built"/>
   <arg name="debug_mode" default="true" description="debug mode"/>
   <arg name="param_path" default="$(find-pkg-share autoware_camera_streampetr)/config/tensorrt_stream_petr.param.yaml"/>
-  <let name="autoware_path" value="$(env HOME)/autoware.proj"/>
-  <!-- <arg name="model_path" default="$(env HOME)/autoware_data/camera_streampetr"/> -->
-  <arg name="model_path" default="$(var autoware_path)/src/streampetr/models"/>
+  <arg name="model_path" default="$(env HOME)/autoware_data/camera_streampetr"/>
   <arg name="rviz" default="false" description="launch rviz"/>
   <arg name="rviz_respawn" default="true" description="respawn rviz"/>
   <set_parameter name="use_sim_time" value="true"/>
