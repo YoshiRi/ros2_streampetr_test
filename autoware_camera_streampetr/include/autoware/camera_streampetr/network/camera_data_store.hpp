@@ -30,8 +30,8 @@
 namespace autoware::camera_streampetr
 {
 
-constexpr float MAX_PERMISSIONED_CAMERA_TIME_DIFF =
-  600;  // 10 minuts. Used to keep the timestamp within limit to prevent overflow in fp16 mode.
+constexpr float MAX_ALLOWED_CAMERA_TIME_DIFF =
+  600;  // 10 minutes. Used to keep the timestamp within limit to prevent overflow in fp16 mode.
 
 class CameraDataStore
 {
@@ -42,7 +42,8 @@ class CameraDataStore
 public:
   CameraDataStore(
     rclcpp::Node * node, const int rois_number, const int image_height, const int image_width,
-    const int anchor_camera_id, const bool is_distorted_image, const double downsample_factor);
+    const int anchor_camera_id, const bool is_distorted_image);
+  ~CameraDataStore();
   void update_camera_image(
     const int camera_id, const Image::ConstSharedPtr & input_camera_image_msg);
   void update_camera_info(
@@ -58,11 +59,38 @@ public:
   float get_timestamp();
   std::vector<std::string> get_camera_link_names() const;
   void restart();
-  void save_processed_image(const int camera_id, const std::string & filename) const;
   void freeze_updates();
   void unfreeze_updates();
 
 private:
+  struct ImageProcessingParams
+  {
+    int original_height;
+    int original_width;
+    float resize;
+    int newW;
+    int newH;
+    int crop_h;
+    int crop_w;
+    int start_x;
+    int start_y;
+    int camera_offset;
+  };
+
+  // Helper methods for update_camera_image
+  ImageProcessingParams calculate_image_processing_params(
+    const int camera_id, const Image::ConstSharedPtr & input_camera_image_msg) const;
+  std::unique_ptr<Tensor> process_distorted_image(
+    const int camera_id, const Image::ConstSharedPtr & input_camera_image_msg,
+    ImageProcessingParams & params);
+  std::unique_ptr<Tensor> process_regular_image(
+    const Image::ConstSharedPtr & input_camera_image_msg, const ImageProcessingParams & params,
+    const int camera_id);
+  void update_metadata_and_timing(
+    const int camera_id, const Image::ConstSharedPtr & input_camera_image_msg,
+    const std::chrono::high_resolution_clock::time_point & start_time);
+  void compute_undistortion_maps(const int camera_id);
+
   const size_t rois_number_;
   const int image_height_;
   const int image_width_;
@@ -70,7 +98,6 @@ private:
   double start_timestamp_;
   float preprocess_time_ms_;
   const bool is_distorted_image_;
-  const double downsample_factor_;
 
   rclcpp::Logger logger_;
   std::vector<CameraInfo::ConstSharedPtr> camera_info_list_;
@@ -80,6 +107,11 @@ private:
   std::vector<double> camera_image_timestamp_;
   std::vector<std::string> camera_link_names_;
   std::vector<cudaStream_t> streams_;
+
+  // GPU memory for undistortion maps
+  std::vector<std::shared_ptr<Tensor>> undistort_map_x_gpu_;
+  std::vector<std::shared_ptr<Tensor>> undistort_map_y_gpu_;
+  std::vector<bool> undistortion_maps_computed_;
 
   // multithreading variables
   mutable std::mutex freeze_mutex_;

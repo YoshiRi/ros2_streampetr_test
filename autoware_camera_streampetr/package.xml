@@ -12,6 +12,7 @@
   <depend>autoware_cuda_utils</depend>
   <depend>autoware_object_recognition_utils</depend>
   <depend>autoware_perception_msgs</depend>
+  <depend>autoware_tensorrt_common</depend>
   <depend>autoware_utils</depend>
   <depend>cv_bridge</depend>
   <depend>eigen</depend>
@@ -27,7 +28,7 @@
 
   <test_depend>ament_clang_format</test_depend>
   <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <test_depend>autoware_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

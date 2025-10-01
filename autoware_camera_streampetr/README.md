@@ -64,7 +64,6 @@ No                  Yes                                                         
 
 | Name                          | Type                                                             | Description                                                     |
 | ----------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
-| `~/input/kinematic_state`     | `nav_msgs::msg::Odometry`                                        | Vehicle kinematic state for ego motion tracking.                |
 | `~/input/camera*/image`       | `sensor_msgs::msg::Image` or `sensor_msgs::msg::CompressedImage` | Input image topics (supports both compressed and uncompressed). |
 | `~/input/camera*/camera_info` | `sensor_msgs::msg::CameraInfo`                                   | Input camera info topics, for camera parameters.                |
 
@@ -115,7 +114,6 @@ The `autoware_camera_streampetr` node has various parameters for configuration:
 - `rois_number`: Number of camera ROIs/cameras (default: 6)
 - `is_compressed_image`: Whether input images are compressed
 - `is_distorted_image`: Whether input images are distorted
-- `downsample_factor`: If is_distorted_image is `true`, factor to downsample the image by during undistortion. Makes undistortion faster than using full scale
 - `multithreading`: Whether to use multithreading for handling image callbacks
 - `anchor_camera_id`: ID of the anchor camera for synchronization (default: 0)
 - `debug_mode`: Enable debug mode for timing measurements
@@ -144,8 +142,8 @@ This node is camera-only and does not require pointcloud input. It assumes:
 - All cameras are synchronized within the specified `max_camera_time_diff`
 - Camera calibration information is available and accurate
 - The anchor camera (specified by `anchor_camera_id`) triggers the inference cycle
-- Vehicle odometry is available for ego motion compensation
-- Transform information between camera frames and base_link is available
+- Transform information between camera frames and base_link is available via tf
+- Transform information between map and base_link is available via tf for ego motion compensation
 - **The input images are undistorted**
 
 ## Trained Models
@@ -164,7 +162,7 @@ If you want to train and deploy your own model, you can find the source code for
 
 ## References/External links
 
-[1] Wang, Shihao and Liu, Yingfei and Wang, Tiancai and Li, Ying and Zhang, Xiangyu. "Exploring Object-Centric Temporal Modeling for Efficient Multi-View 3D Object Detection." 2023
+[1] Wang, Shihao and Liu, Yingfei and Wang, Tiancai and Li, Ying and Zhang, Xiangyu. "Exploring Object-Centric Temporal Modeling for Efficient Multi-View 3D Object Detection." 2023 <!-- cspell:disable-line -->
 
 ## (Optional) Future extensions / Unimplemented parts
 
