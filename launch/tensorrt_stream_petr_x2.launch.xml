@@ -52,7 +52,8 @@
       <param name="is_compressed_image" value="true" />   <!-- Whether the input image is compressed. -->
       <param name="is_distorted_image" value="true" />   <!-- Whether the input image is compressed. -->
       <param name="multithreading" value="false"/>
-      <param name="downsample_factor" value="0.3"/>
+      <param name="downsample_factor" value="1.0"/>
+      <param name="max_camera_time_diff" value="0.2"/>
 
     </node>
   </group>
@@ -85,11 +86,12 @@
       <remap from="~/input/camera2/image/compressed" to="/sensing/camera/camera10/image_raw/compressed"/>
       <remap from="~/input/camera3/image/compressed" to="/sensing/camera/camera7/image_raw/compressed"/>
       <remap from="~/input/camera4/image/compressed" to="/sensing/camera/camera9/image_raw/compressed"/>
-      <param name="anchor_camera_id" value="10" />   <!-- The forward pass begins once every anchor camera topic reaches. Choose this as the camera that causes the shortest differnce in min and max timestamp between cameras-->
+      <param name="anchor_camera_id" value="0" />   <!-- The forward pass begins once every anchor camera topic reaches. Choose this as the camera that causes the shortest differnce in min and max timestamp between cameras-->
       <param name="is_compressed_image" value="true" />   <!-- Whether the input image is compressed. -->
       <param name="is_distorted_image" value="true" />   <!-- Whether the input image is compressed. -->
       <param name="multithreading" value="false"/>
-      <param name="downsample_factor" value="0.3"/>
+      <param name="downsample_factor" value="1.0"/>
+      <param name="max_camera_time_diff" value="0.2"/>
     </node>
   </group>
 
