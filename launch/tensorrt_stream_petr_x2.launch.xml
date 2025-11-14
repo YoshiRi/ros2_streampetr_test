@@ -12,8 +12,13 @@
   <!-- START: Image Transport Decompressor for independent nodetesting-->
 
   <arg name="param_file" default="$(find-pkg-share autoware_image_transport_decompressor)/config/image_transport_decompressor.param.yaml"/>
+  <arg name="streampetr_topic" default="/perception/object_recognition/detection/streampetr/objects"/>
+  <arg name="filtered_topic" default="/perception/object_recognition/detection/camera_only/objects"/>
+  <arg name="filter_output" default="true"/>
 
 
+  <let name="output_topic" value="$(var streampetr_topic)" if="$(var filter_output)" />
+  <let name="output_topic" value="$(var filtered_topic)" unless="$(var filter_output)" />      
   <group unless="$(var use_5cameras)">
     <node pkg="autoware_camera_streampetr" exec="autoware_camera_streampetr_node" name="stream_petr" output="screen">
       <param from="$(var param_path)" allow_substs="true"/>
@@ -39,14 +44,13 @@
       <remap from="~/input/camera3/image" to="/sensing/camera/camera10/image_raw"/>
       <remap from="~/input/camera4/image" to="/sensing/camera/camera7/image_raw"/>
       <remap from="~/input/camera5/image" to="/sensing/camera/camera9/image_raw"/>
-      <remap from="~/output/objects" to="/perception/object_recognition/camera_only/objects"/>
-      
       <remap from="~/input/camera0/image/compressed" to="/sensing/camera/camera8/image_raw/compressed"/>
       <remap from="~/input/camera1/image/compressed" to="/sensing/camera/camera0/image_raw/compressed"/>
       <remap from="~/input/camera2/image/compressed" to="/sensing/camera/camera6/image_raw/compressed"/>
       <remap from="~/input/camera3/image/compressed" to="/sensing/camera/camera10/image_raw/compressed"/>
       <remap from="~/input/camera4/image/compressed" to="/sensing/camera/camera7/image_raw/compressed"/>
       <remap from="~/input/camera5/image/compressed" to="/sensing/camera/camera9/image_raw/compressed"/>
+      <remap from="~/output/objects" to="$(var output_topic)"/>
 
       <param name="anchor_camera_id" value="0" />   <!-- The forward pass begins once every anchor camera topic reaches. Choose this as the camera that causes the shortest differnce in min and max timestamp between cameras-->
       <param name="is_compressed_image" value="true" />   <!-- Whether the input image is compressed. -->
@@ -80,7 +84,7 @@
       <remap from="~/input/camera2/image" to="/sensing/camera/camera10/image_raw"/>
       <remap from="~/input/camera3/image" to="/sensing/camera/camera7/image_raw"/>
       <remap from="~/input/camera4/image" to="/sensing/camera/camera9/image_raw"/>
-      <remap from="~/output/objects" to="/perception/object_recognition/camera_only/objects"/> 
+      <remap from="~/output/objects" to="$(var output_topic)"/>
 
       <remap from="~/input/camera0/image/compressed" to="/sensing/camera/camera8/image_raw/compressed"/>
       <remap from="~/input/camera1/image/compressed" to="/sensing/camera/camera6/image_raw/compressed"/>
@@ -94,6 +98,14 @@
       <param name="downsample_factor" value="1.0"/>
       <param name="max_camera_time_diff" value="0.2"/>
     </node>
+  </group>
+
+  <group if="$(var filter_output)">
+    <include file="$(find-pkg-share autoware_object_sorter)/launch/detected_object_sorter.launch.xml">
+      <arg name="input/objects" value="$(var streampetr_topic)"/>
+      <arg name="output/objects" value="$(var filtered_topic)"/>
+      <arg name="param_path" value="$(find-pkg-share autoware_camera_streampetr)/config/streampetr_object_sorter.yaml"/>
+    </include>
   </group>
 
     <!-- Tools -->
