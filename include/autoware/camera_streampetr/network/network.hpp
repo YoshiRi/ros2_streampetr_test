@@ -97,8 +97,7 @@ public:
 
       std::stringstream ss;
       ss << *(bindings[name]);
-      const std::string & str = ss.str();
-      RCLCPP_INFO(logger, "%s", str.c_str());
+      RCLCPP_INFO(logger, "%s", ss.str().c_str());
 
       setTensorAddress(name.c_str(), bindings[name]->ptr);
     }
